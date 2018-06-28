@@ -14,5 +14,20 @@ public class MarketListAdapter extends RecyclerView.Adapter<MarketListAdapter.Ma
         mMarket = markets;
     }
 
+    @Override
+    public MarketListAdapter.MarketViewHlder onCreateViewHolder(ViewGroup parent, int viewType) {
+       View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_item, parent, false);
+       MarketViewHolder viewHolder = new MarketViewHolder(view);
+       return  viewHolder;
+    }
+
+   @Override
+   public void onBindViewHolder(MarketListAdapter.MarketViewHolder holder, int position) {
+    holder.bindMarket(mMarket.get(position));
+    }
+}
+
+
+
     public static class MarketPagerAdapter {
     }

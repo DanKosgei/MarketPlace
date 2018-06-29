@@ -19,9 +19,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Bind(R.id.btn) Button myButton;
     @Bind(R.id.myname) EditText myEditText;
+    @Bind(R.id.saved)Button saveButton;
+    @Bind(R.id.logout)Button logOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Parse the searched item as an argument
+        mSearcheditemReference = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child(Constants.FIREBASE_CHILD_SEARCHED_ITEM);
+
+    }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);

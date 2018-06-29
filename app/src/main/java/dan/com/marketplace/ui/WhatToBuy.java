@@ -23,6 +23,7 @@ public class WhatToBuy extends AppCompatActivity {
 
         getItems(name);
     }
+
     //Now this method is for getting the items and showing if there is anything passed
     public void getItems(String item){
         final MarketService marketService = new MarketService();
@@ -31,4 +32,51 @@ public class WhatToBuy extends AppCompatActivity {
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
             }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                //String jsonData = response.body().string();
+                mMarket = marketService.processResults(response);
+
+                //Now lets Define a thread
+                WhatToBuy.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter = new MarketListAdapter(getApplicationContext(), mMarket);
+                        mRecyclerView.setAdapter(mAdapter);
+                        RecyclerView.LayoutManager layoutManager =
+                                new LinearLayoutManager(WhatToBuy.this);
+                        mRecyclerView.setLayoutManager(layoutManager);
+                        mRecyclerView.setHasFixedSize(true);
+
+                    }
+                });
+            }
+        });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_logout) {
+            logout();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void logout() {
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(WhatToBuy.this, LogIn.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
 }
+

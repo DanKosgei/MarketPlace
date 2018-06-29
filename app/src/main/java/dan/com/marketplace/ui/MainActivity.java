@@ -34,8 +34,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-    }
-      mSearcheditemReference.addValueEventListener(new ValueEventListener() {
+
+    mAuth = FirebaseAuth.getInstance();
+    mAuthListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            //display welcome message
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                //getSupportActionBar().setTitle("Welcome, " + user.getDisplayName() + "!");
+            } else {
+
+            }
+        }
+    };
+
+    //Now lets add the search value event listener
+        mSearcheditemReference.addValueEventListener(new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {//When something changes
             for (DataSnapshot locationSnapshot : dataSnapshot.getChildren()) {
@@ -45,12 +60,50 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onClick(View view) {
-            if (view == myButton){
-                String name = myEditText.getText().toString();
+        public void onCancelled(DatabaseError databaseError) {
 
-                Intent intent = new Intent(MainActivity.this, WhatToBuy.class);
-                intent.putExtra("name", name);
-                startActivity(intent);
-            }
+        }
+    });
+
+
+    //Set an onclick listener
+        myButton.setOnClickListener(this);
+        saveButton.setOnClickListener(this);
+        logOut.setOnClickListener(this);
 }
+
+    //This is supposed to set the value in our firebase
+    public void saveCommoditiesToFirebase(String name) {
+        mSearcheditemReference.push().setValue(name);
+    }
+
+
+}
+      mSearcheditemReference.addValueEventListener(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {//When something changes
+            for (DataSnapshot locationSnapshot : dataSnapshot.getChildren()) {
+                String item = locationSnapshot.getValue().toString();
+                Log.d("Items  updated", "item: " + item); //log
+            }
+        }
+
+@Override
+public void onClick(View view) {
+        if (view == myButton){
+        String name = myEditText.getText().toString();
+        //This is supposed to save our stuff in the firebase
+        saveCommoditiesToFirebase(name);
+        Intent intent = new Intent(MainActivity.this, WhatToBuy.class);
+        intent.putExtra("name", name);
+        startActivity(intent);
+        }
+        if (view == saveButton){
+        Intent intent = new Intent(MainActivity.this, SavedItemListActivity.class);
+        startActivity(intent);
+        }
+        if(view == logOut){
+        logout();
+        }
+
+        }

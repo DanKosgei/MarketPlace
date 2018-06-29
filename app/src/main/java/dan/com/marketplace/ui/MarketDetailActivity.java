@@ -18,5 +18,15 @@ public class MarketDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_market_detail);
+
+        ButterKnife.bind(this);
+
+        mMarket = Parcels.unwrap(getIntent().getParcelableExtra("markets"));
+
+        int startingPosition = getIntent().getIntExtra("position", 0);
+
+        adapterViewPager = new MarketPagerAdapter(getSupportFragmentManager(), mMarket);
+        mViewPager setAdapter(adapterViewPager);
+        mViewPager.setCurrentItem(startingPosition);
     }
 }
